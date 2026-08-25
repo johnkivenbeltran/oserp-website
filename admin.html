@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSERP Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin_page { max-width: 900px; margin: 32px auto 120px; padding: 0 20px; }
+        .admin_login, .admin_panel { background: #fff; border: 1px solid #ddd; padding: 24px; }
+        .admin_login { max-width: 420px; margin: 60px auto; }
+        .admin_form { display: flex; gap: 10px; margin-top: 18px; }
+        .admin_form input, .admin_form button, .admin_status { padding: 12px; font: inherit; }
+        .admin_form input { flex: 1; }
+        .admin_form button { cursor: pointer; }
+        .admin_message { min-height: 24px; color: #a33; }
+        .admin_shipping { margin: 24px 0; padding: 16px; border: 1px solid #ddd; }
+        .admin_shipping label { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .admin_shipping input { width: 18px; height: 18px; }
+        .admin_products { margin: 24px 0; padding: 16px; border: 1px solid #ddd; }
+        .admin_product_form { display: flex; gap: 10px; margin-top: 12px; }
+        .admin_product_form input, .admin_product_form select, .admin_product_form button { padding: 10px; font: inherit; }
+        .admin_product_form input { flex: 1; }
+        .admin_table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .admin_table th, .admin_table td { padding: 12px 8px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; }
+        .admin_table button { margin-top: 6px; cursor: pointer; }
+        @media (max-width: 650px) { .admin_table { display: block; overflow-x: auto; white-space: nowrap; } }
+    </style>
+</head>
+<body>
+    <main class="admin_page">
+        <h1>OSERP Admin</h1>
+        <section class="admin_login" id="loginPanel">
+            <h2>Admin Login</h2>
+            <p class="admin_message" id="loginMessage"></p>
+            <form class="admin_form" id="loginForm">
+                <input id="adminPassword" type="password" placeholder="Admin password" required>
+                <button type="submit">Sign In</button>
+            </form>
+        </section>
+
+        <section class="admin_panel" id="ordersPanel" hidden>
+            <div class="admin_shipping">
+                <h2>Shipping Settings</h2>
+                <label><input type="checkbox" id="freeMetroManilaShipping"> Free shipping in Metro Manila (NCR)</label>
+                <p class="admin_message" id="shippingMessage"></p>
+            </div>
+            <div class="admin_products">
+                <h2>Product Packaging Categories</h2>
+                <p>Use the product ID coded in the frontend, such as product_name_1. Category 1 = full size, Category 2 = half size, Category 3 = quarter size. Unlisted product IDs use Category 1 by default.</p>
+                <form class="admin_product_form" id="productForm">
+                    <input id="productName" type="text" placeholder="Product ID, e.g. product_name_1" pattern="product_name_[0-9]+" required>
+                    <select id="productCategory" aria-label="Packaging category">
+                        <option value="1">Category 1</option>
+                        <option value="2">Category 2</option>
+                        <option value="3">Category 3</option>
+                    </select>
+                    <button type="submit">Save Product</button>
+                </form>
+                <p class="admin_message" id="productMessage"></p>
+                <table class="admin_table">
+                    <thead><tr><th>Product</th><th>Category</th><th>Action</th></tr></thead>
+                    <tbody id="productsBody"></tbody>
+                </table>
+            </div>
+            <h2>Orders</h2>
+            <p class="admin_message" id="ordersMessage"></p>
+            <table class="admin_table">
+                <thead>
+                    <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr>
+                </thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app_popup.js"></script>
+    <script>
+        const adminApiUrl =
+            "http://localhost:3000";
+
+        const ADMIN_TOKEN_KEY = "oserpAdminToken";
+        let adminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
+        const statusOptions = ["Processing", "Shipped", "Delivered", "Cancelled"];
+
+        function showAdminPanel() {
+            document.getElementById("loginPanel").hidden = true;
+            document.getElementById("ordersPanel").hidden = false;
+            loadShippingSettings();
+            loadProducts();
+            loadOrders();
+        }
+
+        async function login(password) {
+            const response = await fetch(`${adminApiUrl}/api/admin/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password })
+            });
+            const responseText = await response.text();
+            let result;
+
+            try {
+                result = responseText ? JSON.parse(responseText) : {};
+            } catch (error) {
+                throw new Error("The server returned an invalid login response.");
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Login failed.");
+            }
+            adminToken = result.token;
+            sessionStorage.setItem(ADMIN_TOKEN_KEY, adminToken);
+            showAdminPanel();
+        }
+
+        function escapeHTML(value) {
+            const element = document.createElement("div");
+            element.textContent = value == null ? "" : String(value);
+            return element.innerHTML;
+        }
+
+        async function loadOrders() {
+            const response = await fetch(`${adminApiUrl}/api/admin/orders`, {
+                headers: { Authorization: `Bearer ${adminToken}` }
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+                document.getElementById("ordersMessage").textContent = result.message || "Unable to load orders.";
+                return;
+            }
+
+            const body = document.getElementById("ordersBody");
+            body.innerHTML = result.orders.map(function(order) {
+                const customer = order.shipping && order.shipping.name ? order.shipping.name : "-";
+                const options = statusOptions.map(function(status) {
+                    return `<option value="${status}" ${status === order.status ? "selected" : ""}>${status}</option>`;
+                }).join("");
+                return `<tr>
+                    <td><strong>#${escapeHTML(order.orderId)}</strong><br><small>${escapeHTML(new Date(order.createdAt).toLocaleString())}</small></td>
+                    <td>${escapeHTML(customer)}<br>${escapeHTML(order.shipping.email || "")}</td>
+                    <td>${order.itemCount}</td>
+                    <td>₱${Number(order.total).toFixed(2)}</td>
+                    <td><select class="admin_status" data-order-id="${escapeHTML(order.orderId)}">${options}</select><br><button type="button" data-save-order="${escapeHTML(order.orderId)}">Update</button><button type="button" data-delete-order="${escapeHTML(order.orderId)}">Delete</button></td>
+                </tr>`;
+            }).join("") || "<tr><td colspan=\"5\">No orders yet.</td></tr>";
+
+            body.querySelectorAll("[data-save-order]").forEach(function(button) {
+                button.addEventListener("click", function() {
+                    const orderId = button.dataset.saveOrder;
+                    const select = body.querySelector(`[data-order-id="${CSS.escape(orderId)}"]`);
+                    updateStatus(orderId, select.value);
+                });
+            });
+
+            body.querySelectorAll("[data-delete-order]").forEach(function(button) {
+                button.addEventListener("click", async function() {
+                    const confirmed = await showAppPopup("Delete this order permanently?", { confirm: true });
+                    if (confirmed) {
+                        deleteOrder(button.dataset.deleteOrder);
+                    }
+                });
+            });
+        }
+
+        async function deleteOrder(orderId) {
+            const response = await fetch(`${adminApiUrl}/api/admin/orders/${encodeURIComponent(orderId)}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${adminToken}` }
+            });
+            const result = await response.json();
+            document.getElementById("ordersMessage").textContent = result.success ? "Order deleted." : (result.message || "Delete failed.");
+            if (result.success) loadOrders();
+        }
+
+        async function loadShippingSettings() {
+            const response = await fetch(`${adminApiUrl}/api/shipping-settings`);
+            const result = await response.json();
+            if (response.ok && result.success) {
+                document.getElementById("freeMetroManilaShipping").checked = result.freeMetroManilaShipping;
+            }
+        }
+
+        async function loadProducts() {
+            const response = await fetch(`${adminApiUrl}/api/admin/products`, {
+                headers: { Authorization: `Bearer ${adminToken}` }
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) return;
+            const body = document.getElementById("productsBody");
+            body.innerHTML = result.products.map(function(product) {
+                return `<tr><td>${escapeHTML(product.product)}</td><td>Category ${product.category}</td><td><button type="button" data-delete-product="${escapeHTML(product.product)}">Delete</button></td></tr>`;
+            }).join("") || "<tr><td colspan=\"3\">No products configured.</td></tr>";
+            body.querySelectorAll("[data-delete-product]").forEach(function(button) {
+                button.addEventListener("click", async function() {
+                    if (!await showAppPopup("Remove this product category?", { confirm: true })) return;
+                    const response = await fetch(`${adminApiUrl}/api/admin/products/${encodeURIComponent(button.dataset.deleteProduct)}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${adminToken}` }
+                    });
+                    const result = await response.json();
+                    document.getElementById("productMessage").textContent = result.success ? "Product category removed." : (result.message || "Update failed.");
+                    if (result.success) loadProducts();
+                });
+            });
+        }
+
+        document.getElementById("productForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const response = await fetch(`${adminApiUrl}/api/admin/products`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
+                body: JSON.stringify({ product: document.getElementById("productName").value, category: Number(document.getElementById("productCategory").value) })
+            });
+            const result = await response.json();
+            document.getElementById("productMessage").textContent = result.success ? "Product category saved." : (result.message || "Save failed.");
+            if (result.success) {
+                document.getElementById("productForm").reset();
+                loadProducts();
+            }
+        });
+
+        async function updateShippingSettings() {
+            const enabled = document.getElementById("freeMetroManilaShipping").checked;
+            const response = await fetch(`${adminApiUrl}/api/admin/shipping-settings`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
+                body: JSON.stringify({ freeMetroManilaShipping: enabled })
+            });
+            const result = await response.json();
+            document.getElementById("shippingMessage").textContent = result.success ? "Shipping setting updated." : (result.message || "Update failed.");
+            if (!result.success) {
+                document.getElementById("freeMetroManilaShipping").checked = !enabled;
+            }
+        }
+
+        document.getElementById("freeMetroManilaShipping").addEventListener("change", updateShippingSettings);
+
+        async function updateStatus(orderId, status) {
+            const response = await fetch(`${adminApiUrl}/api/admin/orders/${encodeURIComponent(orderId)}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
+                body: JSON.stringify({ status })
+            });
+            const result = await response.json();
+            document.getElementById("ordersMessage").textContent = result.success ? "Order status updated." : (result.message || "Update failed.");
+            if (result.success) loadOrders();
+        }
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            login(document.getElementById("adminPassword").value).catch(function(error) {
+                document.getElementById("loginMessage").textContent = error.message;
+            });
+        });
+
+        if (adminToken) showAdminPanel();
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "oserp-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local backend for the OSERP storefront",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "nodemailer": "^9.0.5"
+  }
+}

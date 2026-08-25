@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&family=Stack+Sans+Text:wght@200..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="desktop_overlay">
+        <h1>For better experience, <br> please use a mobile device</h1>
+    </div>
+
+     <div class="top_header">
+        <img class="header_logo" src="images/logo.svg" alt="logo">        
+        <a href="shop.html" class="header_shop">
+            <span class="material-symbols-outlined local_mall">local_mall</span>
+            Shop
+        </a>
+    </div>
+
+    <div class="ord_page">
+
+    <!-- PAGE TITLE -->
+
+    <h2 class="ord_title">
+        My Orders
+    </h2>
+
+
+    <!-- ORDER ID SEARCH -->
+
+    <div class="ord_search_box">
+
+        <h3>
+            Find Your Order
+        </h3>
+
+        <p>
+            Enter your Order ID to view your order status and details.
+        </p>
+
+        <div class="ord_search">
+
+            <input
+                type="text"
+                id="orderIdInput"
+                placeholder="Enter Order ID"
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                onclick="findOrder()"
+            >
+                View Order
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- CURRENT ORDER -->
+
+    <div class="ord_current" id="currentOrder" style="display: none;">
+
+        <div class="ord_current_header">
+
+            <div>
+                <span>Current Order</span>
+                <h3 id="currentOrderId">-</h3>
+            </div>
+
+            <div class="ord_status" id="currentOrderStatus">
+                Processing
+            </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="ord_status_section">
+
+            <div class="ord_status_line">
+
+                <div class="ord_status_step" data-status-step="Order Placed">
+                    <div class="ord_status_dot"></div>
+
+                    <div>
+                        <strong>Order Placed</strong>
+                        <span id="orderPlacedDate">-</span>
+                    </div>
+                </div>
+
+
+                <div class="ord_status_step" data-status-step="Payment Confirmed">
+                    <div class="ord_status_dot"></div>
+
+                    <div>
+                        <strong>Payment Confirmed</strong>
+                        <span>Payment received</span>
+                    </div>
+                </div>
+
+
+                <div class="ord_status_step" data-status-step="Processing">
+                    <div class="ord_status_dot"></div>
+
+                    <div>
+                        <strong>Processing</strong>
+                        <span>Your order is being prepared</span>
+                    </div>
+                </div>
+
+
+                <div class="ord_status_step" data-status-step="Shipped">
+                    <div class="ord_status_dot"></div>
+
+                    <div>
+                        <strong>Shipped</strong>
+                        <span>Waiting for shipment</span>
+                    </div>
+                </div>
+
+
+                <div class="ord_status_step" data-status-step="Delivered">
+                    <div class="ord_status_dot"></div>
+
+                    <div>
+                        <strong>Delivered</strong>
+                        <span>Waiting for delivery</span>
+                    </div>
+                </div>
+
+                <div class="ord_status_step" data-status-step="Cancelled">
+                    <div class="ord_status_dot"></div>
+
+                    <div>
+                        <strong>Cancelled</strong>
+                        <span>This order was cancelled</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ORDER SUMMARY -->
+
+        <div class="ord_summary" id="orderSummaryItems">
+
+            <h4>
+                Order Summary
+            </h4>
+
+
+        </div>
+
+
+        <!-- TOTAL -->
+
+        <div class="ord_total">
+
+            <span>Total</span>
+
+            <strong id="currentOrderTotal">₱0.00</strong>
+
+        </div>
+
+
+        <!-- VIEW DETAILS -->
+
+        <button
+            type="button"
+            class="ord_details_button"
+            onclick="viewOrderDetails()"
+        >
+            View Order Details
+        </button>
+
+    </div>
+
+
+    <!-- NO ORDER PLACEHOLDER -->
+
+    <div
+        class="ord_no_order"
+        id="noOrderMessage"
+    >
+        Enter an Order ID above to view an order.
+    </div>
+
+</div>
+    
+    <div class="navigation_container">
+    
+        <div class="navigation_glass">
+
+            <a href="index.html">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">home</span>
+                    <h5 class="nav_text text_home">Home</h5>
+                </div>
+            </a>
+
+            <a  href="cart.html">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">shopping_cart</span>
+                    <h5 class="nav_text">Cart</h5>
+                </div>
+            </a>
+
+            <a id="home_active" href="orders.html">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">order_approve</span>
+                    <h5 class="nav_text">Orders</h5>
+                </div>
+            </a>
+
+            <a href="https://m.me/1339937362527464" target="_blank" rel="noopener noreferrer">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">payments</span>
+                    <h5 class="nav_text">Payment</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script src="app_popup.js"></script>
+    <script>
+        const ordersApiUrl =
+            window.location.origin;
+
+        let displayedOrder = null;
+
+        function escapeHTML(value) {
+            const element = document.createElement("div");
+            element.textContent = value == null ? "" : String(value);
+            return element.innerHTML;
+        }
+
+        function formatOrderDate(dateValue) {
+            return new Date(dateValue).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric"
+            });
+        }
+
+        function renderOrder(order) {
+            displayedOrder = order;
+            document.getElementById("currentOrderId").textContent = `#${order.orderId}`;
+            document.getElementById("currentOrderStatus").textContent = order.status || "Processing";
+            document.getElementById("orderPlacedDate").textContent = formatOrderDate(order.createdAt);
+            renderStatus(order.status || "Processing");
+            const shippingFee = Number(order.shipping && order.shipping.shippingFee || 0);
+            document.getElementById("currentOrderTotal").textContent = `₱${Number(order.total).toFixed(2)}`;
+            document.getElementById("currentOrderTotal").title = `Includes ₱${shippingFee.toFixed(2)} shipping fee`;
+
+            const summary = document.getElementById("orderSummaryItems");
+            summary.innerHTML = "<h4>Order Summary</h4>";
+
+            order.items.forEach(function(item) {
+                const designs = Object.entries(item.designs)
+                    .map(function([design, quantity]) {
+                        return `${escapeHTML(design)} x ${quantity}`;
+                    })
+                    .join(", ");
+
+                summary.insertAdjacentHTML("beforeend", `
+                    <div class="ord_item">
+                        <div>
+                            <strong>${escapeHTML(item.product)}</strong>
+                            <span>${escapeHTML(item.cover)} | ${designs}</span>
+                        </div>
+                        <strong>₱${(Number(item.price) * (Number(item.quantity) || 1)).toFixed(2)}<br><small>${Number(item.quantity) || 1} unit(s)</small></strong>
+                    </div>
+                `);
+            });
+
+            document.getElementById("currentOrder").style.display = "block";
+            document.getElementById("noOrderMessage").style.display = "none";
+        }
+
+        function renderStatus(status) {
+            const steps = Array.from(document.querySelectorAll("[data-status-step]"));
+            const currentIndex = steps.findIndex(function(step) {
+                return step.dataset.statusStep === status;
+            });
+            const completedCount = status === "Cancelled" ? 2 : currentIndex;
+
+            steps.forEach(function(step, index) {
+                step.classList.toggle("active", completedCount >= 0 && index < completedCount);
+                step.classList.toggle("current", index === currentIndex);
+            });
+        }
+
+        async function findOrder() {
+            const input = document.getElementById("orderIdInput");
+            const orderId = input.value.trim().replace(/^#/, "");
+
+            if (!orderId) {
+                showAppPopup("Enter an Order ID.");
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${ordersApiUrl}/api/orders/${encodeURIComponent(orderId)}`,
+                    { credentials: "include" }
+                );
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    renderOrder(result.order);
+                    return;
+                }
+            } catch (error) {
+                console.error("ORDER SEARCH ERROR:", error);
+            }
+
+            try {
+                const localOrder = JSON.parse(
+                    sessionStorage.getItem("checkoutOrder") || "null"
+                );
+                if (localOrder && localOrder.orderId === orderId) {
+                    renderOrder(localOrder);
+                    return;
+                }
+            } catch (error) {
+                console.error("LOCAL ORDER SEARCH ERROR:", error);
+            }
+
+            document.getElementById("currentOrder").style.display = "none";
+            document.getElementById("noOrderMessage").textContent = "Order not found.";
+            document.getElementById("noOrderMessage").style.display = "block";
+        }
+
+        function viewOrderDetails() {
+            if (displayedOrder) {
+                sessionStorage.setItem(
+                    "checkoutOrder",
+                    JSON.stringify(displayedOrder)
+                );
+                sessionStorage.setItem(
+                    "viewingOrderDetails",
+                    "true"
+                );
+                window.location.href = "checkout.html";
+            }
+        }
+    </script>
+
+</body>

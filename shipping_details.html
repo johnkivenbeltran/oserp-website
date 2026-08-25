@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&family=Stack+Sans+Text:wght@200..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="desktop_overlay">
+        <h1>For better experience, <br> please use a mobile device</h1>
+    </div>
+
+     <div class="top_header">
+        <img class="header_logo" src="images/logo.svg" alt="logo">        
+        <a href="shop.html" class="header_shop">
+            <span class="material-symbols-outlined local_mall">local_mall</span>
+            Shop
+        </a>
+    </div>
+
+    <form class="shipping_form" id="shippingForm">
+
+        <div class="shipping_section">
+
+            <h2>Contact Details</h2>
+
+            <div class="form_group">
+                <label for="name">Full Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required
+                >
+            </div>
+
+            <div class="form_row">
+
+                <div class="form_group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="example@email.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form_group">
+                    <label for="contact">Contact Number</label>
+                    <input
+                        type="tel"
+                        id="contact"
+                        name="contact"
+                        placeholder="09XXXXXXXXX"
+                        autocomplete="tel"
+                        required
+                    >
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="shipping_section">
+
+            <h2>Shipping Address</h2>
+            <p class="shipping_notice" id="shippingNotice" hidden>Metro Manila (NCR) orders qualify for FREE shipping.</p>
+
+            <div class="form_group">
+                <label for="region">Region</label>
+                <select id="region" name="region" required>
+                    <option value="" disabled selected>Select Region</option>
+                    <option value="NCR">National Capital Region (NCR)</option>
+                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                    <option value="Region I">Ilocos Region</option>
+                    <option value="Region II">Cagayan Valley</option>
+                    <option value="Region III">Central Luzon</option>
+                    <option value="Region IV-A">CALABARZON</option>
+                    <option value="Region IV-B">MIMAROPA</option>
+                    <option value="Region V">Bicol Region</option>
+                    <option value="Region VI">Western Visayas</option>
+                    <option value="Region VII">Central Visayas</option>
+                    <option value="Region VIII">Eastern Visayas</option>
+                    <option value="Region IX">Zamboanga Peninsula</option>
+                    <option value="Region X">Northern Mindanao</option>
+                    <option value="Region XI">Davao Region</option>
+                    <option value="Region XII">SOCCSKSARGEN</option>
+                    <option value="Region XIII">Caraga</option>
+                    <option value="BARMM">Bangsamoro</option>
+                </select>
+            </div>
+
+
+            <div class="form_row">
+
+                <div class="form_group">
+                    <label for="city">City / Municipality</label>
+                    <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        placeholder="City / Municipality"
+                        autocomplete="address-level2"
+                        required
+                    >
+                </div>
+
+                <div class="form_group">
+                    <label for="barangay">Barangay</label>
+                    <input
+                        type="text"
+                        id="barangay"
+                        name="barangay"
+                        placeholder="Barangay"
+                        required
+                    >
+                </div>
+
+            </div>
+
+
+            <div class="form_group">
+                <label for="street">Street</label>
+                <input
+                    type="text"
+                    id="street"
+                    name="street"
+                    placeholder="Street name"
+                    autocomplete="street-address"
+                    required
+                >
+            </div>
+
+
+            <div class="form_row">
+
+                <div class="form_group">
+                    <label for="house_number">House / Unit Number</label>
+                    <input
+                        type="text"
+                        id="house_number"
+                        name="house_number"
+                        placeholder="House / Unit No."
+                        required
+                    >
+                </div>
+
+                <div class="form_group">
+                    <label for="postal">Postal Code</label>
+                    <input
+                        type="text"
+                        id="postal"
+                        name="postal"
+                        placeholder="Postal Code"
+                        inputmode="numeric"
+                        maxlength="4"
+                        required
+                    >
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button type="submit" class="save_shipping">
+            Continue
+        </button>
+
+    </form>
+    
+    <div class="navigation_container">
+    
+        <div class="navigation_glass">
+
+            <a href="index.html">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">home</span>
+                    <h5 class="nav_text text_home">Home</h5>
+                </div>
+            </a>
+
+            <a  href="cart.html">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">shopping_cart</span>
+                    <h5 class="nav_text">Cart</h5>
+                </div>
+            </a>
+
+            <a href="orders.html">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">order_approve</span>
+                    <h5 class="nav_text">Orders</h5>
+                </div>
+            </a>
+
+            <a href="https://m.me/1339937362527464" target="_blank" rel="noopener noreferrer">
+                <div class="nav_con">
+                    <span class="material-symbols-rounded home">payments</span>
+                    <h5 class="nav_text">Payment</h5>
+                </div>
+            </a>
+            
+
+
+        </div>
+    </div>
+
+    <script>
+        const shippingForm =
+            document.getElementById("shippingForm");
+
+        fetch(`${window.location.origin}/api/shipping-settings`)
+            .then(function(response) { return response.json(); })
+            .then(function(result) {
+                if (result.success) {
+                    sessionStorage.setItem("freeMetroManilaShipping", String(result.freeMetroManilaShipping));
+                }
+                document.getElementById("shippingNotice").hidden = !result.success || !result.freeMetroManilaShipping;
+            })
+            .catch(function() {});
+
+        shippingForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const formData =
+                new FormData(shippingForm);
+
+            const shippingDetails =
+                Object.fromEntries(formData.entries());
+
+            sessionStorage.setItem(
+                "shippingDetails",
+                JSON.stringify(shippingDetails)
+            );
+
+            window.location.href = "checkout.html";
+        });
+    </script>
+
+</body>
